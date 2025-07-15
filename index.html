@@ -1,534 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Rider Customer Journey: Automated Comms Map</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Rider Customer Journey: Automated Comms Map</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 20px;
+        min-height: 100vh;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
+    .header h1 {
+        color: #2c3e50;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
 
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+    .header p {
+        color: #7f8c8d;
+        font-size: 1.1em;
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-        .header p {
-            color: #7f8c8d;
-            font-size: 1.1em;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    .journey-container {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding: 20px 0;
+        min-height: 800px;
+    }
 
+    .stage {
+        min-width: 320px;
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        position: relative;
+        border-top: 6px solid;
+    }
+
+    .stage.consideration { border-top-color: #e74c3c; }
+    .stage.post-booking { border-top-color: #f39c12; }
+    .stage.post-onboarding { border-top-color: #2ecc71; }
+    .stage.usage { border-top-color: #3498db; }
+    .stage.offboarding { border-top-color: #9b59b6; }
+    .stage.arrears { border-top-color: #e67e22; }
+
+    .stage-header {
+        margin-bottom: 20px;
+    }
+
+    .stage-number {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #34495e;
+        color: white;
+        text-align: center;
+        line-height: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .stage-title {
+        font-size: 1.4em;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .stage-goal {
+        font-size: 0.9em;
+        color: #7f8c8d;
+        line-height: 1.4;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+    }
+
+    .series {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #fefefe;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        position: relative;
+    }
+
+    .series.needs-update {
+        border-left: 4px solid #e74c3c;
+        background: #fff5f5;
+    }
+
+    .series.active {
+        border-left: 4px solid #2ecc71;
+    }
+
+    .series.issue {
+        border-left: 4px solid #f39c12;
+        background: #fffbf0;
+    }
+
+    .series-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+    .series-details {
+        font-size: 0.85em;
+        color: #5a6c7d;
+        margin-bottom: 10px;
+    }
+
+    .channels {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+
+    .channel {
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.75em;
+        font-weight: 500;
+        color: white;
+    }
+
+    .channel.email { background: #3498db; }
+    .channel.sms { background: #f39c12; }
+    .channel.whatsapp { background: #25d366; }
+    .channel.push { background: #9b59b6; }
+
+    .audience {
+        font-size: 0.8em;
+        color: #7f8c8d;
+        margin-bottom: 5px;
+    }
+    
+    .audience a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .audience a:hover {
+        text-decoration: underline;
+    }
+
+    .timing {
+        font-size: 0.8em;
+        color: #34495e;
+        font-weight: 500;
+    }
+
+    .status {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7em;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status.active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status.needs-update {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status.issue {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .arrow {
+        position: absolute;
+        right: -15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2em;
+        color: #bdc3c7;
+        z-index: 10;
+    }
+
+    .legend {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    .legend h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    .ownership-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        text-align: center;
+    }
+
+    .ownership-grid h4 {
+        color: #2c3e50;
+        margin-bottom: 5px;
+        font-size: 1em;
+    }
+
+    .ownership-grid p {
+        font-size: 0.9em;
+        color: #5a6c7d;
+    }
+
+    .contact-info {
+        text-align: center;
+        font-size: 0.95em;
+        color: #34495e;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .contact-info a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .contact-info a:hover {
+        text-decoration: underline;
+    }
+
+    .action-needed {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.75em;
+        color: #856404;
+        margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
         .journey-container {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 20px 0;
-            min-height: 800px;
+            flex-direction: column;
         }
-
+        
         .stage {
-            min-width: 320px;
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-            position: relative;
-            border-top: 6px solid;
+            min-width: auto;
         }
-
-        .stage.consideration { border-top-color: #e74c3c; }
-        .stage.post-booking { border-top-color: #f39c12; }
-        .stage.post-onboarding { border-top-color: #2ecc71; }
-        .stage.usage { border-top-color: #3498db; }
-        .stage.offboarding { border-top-color: #9b59b6; }
-        .stage.arrears { border-top-color: #e67e22; }
-
-        .stage-header {
-            margin-bottom: 20px;
-        }
-
-        .stage-number {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #34495e;
-            color: white;
-            text-align: center;
-            line-height: 30px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .stage-title {
-            font-size: 1.4em;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-
-        .stage-goal {
-            font-size: 0.9em;
-            color: #7f8c8d;
-            line-height: 1.4;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
-        }
-
-        .series {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #fefefe;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
-            position: relative;
-        }
-
-        .series.needs-update {
-            border-left: 4px solid #e74c3c;
-            background: #fff5f5;
-        }
-
-        .series.active {
-            border-left: 4px solid #2ecc71;
-        }
-
-        .series.issue {
-            border-left: 4px solid #f39c12;
-            background: #fffbf0;
-        }
-
-        .series-name {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .series-details {
-            font-size: 0.85em;
-            color: #5a6c7d;
-            margin-bottom: 10px;
-        }
-
-        .channels {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-
-        .channel {
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 0.75em;
-            font-weight: 500;
-            color: white;
-        }
-
-        .channel.email { background: #3498db; }
-        .channel.sms { background: #f39c12; }
-        .channel.whatsapp { background: #25d366; }
-        .channel.push { background: #9b59b6; }
-
-        .audience {
-            font-size: 0.8em;
-            color: #7f8c8d;
-            margin-bottom: 5px;
-        }
-
-        .timing {
-            font-size: 0.8em;
-            color: #34495e;
-            font-weight: 500;
-        }
-
-        .status {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7em;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status.active {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status.needs-update {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status.issue {
-            background: #fff3cd;
-            color: #856404;
-        }
-
+        
         .arrow {
-            position: absolute;
-            right: -15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 2em;
-            color: #bdc3c7;
-            z-index: 10;
+            display: none;
         }
-
-        .legend {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-
-        .legend h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9em;
-            position: relative; /* <-- Add this line */
-        }
-
-        .action-needed {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.75em;
-            color: #856404;
-            margin-top: 8px;
-        }
-
-        @media (max-width: 768px) {
-            .journey-container {
-                flex-direction: column;
-            }
-            
-            .stage {
-                min-width: auto;
-            }
-            
-            .arrow {
-                display: none;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>The Rider Customer Journey: Automated Comms Map</h1>
-        <p>Comprehensive overview of automated communication series across all customer lifecycle stages</p>
-    </div>
-
-    <div class="journey-container">
-        <!-- Stage 1: Consideration -->
-        <div class="stage consideration">
-            <div class="arrow">→</div>
-            <div class="stage-header">
-                <div class="stage-number">1</div>
-                <div class="stage-title">Consideration Stage</div>
-                <div class="stage-goal">
-                    <strong>Goal:</strong> Push new leads and interested users down the funnel by converting them into bookings
-                </div>
-            </div>
-
-            <div class="series needs-update">
-                <div class="status needs-update">Needs Update</div>
-                <div class="series-name">Welcome 10</div>
-                <div class="series-details">Encourage bookings with $10 discount code</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                </div>
-                <div class="audience">🌍 Global</div>
-                <div class="timing">14-day series • 3 emails</div>
-                <div class="action-needed">⚠️ Requires branding and content update</div>
-            </div>
-
-            <div class="series active">
-                <div class="status active">Active</div>
-                <div class="series-name">10€/20€ Coupon</div>
-                <div class="series-details">Drive bookings in Spanish market</div>
-                <div class="channels">
-                    <span class="channel whatsapp">WhatsApp</span>
-                </div>
-                <div class="audience">🇪🇸 Spain only</div>
-                <div class="timing">5-day series • 3 messages</div>
-            </div>
-
-            <div class="series active">
-                <div class="status active">Active</div>
-                <div class="series-name">Abandoned Cart</div>
-                <div class="series-details">Recover incomplete bookings</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                    <span class="channel sms">SMS</span>
-                    <span class="channel whatsapp">WhatsApp</span>
-                </div>
-                <div class="audience">🌍 Global (disabled: FR, DE)</div>
-                <div class="timing">3-day series • 3 communications</div>
+<div class="header">
+<h1>The Rider Customer Journey: Automated Comms Map</h1>
+<p>Comprehensive overview of automated communication series across all customer lifecycle stages</p>
+</div>
+<div class="journey-container">
+    <!-- Stage 1: Consideration -->
+    <div class="stage consideration">
+        <div class="arrow">→</div>
+        <div class="stage-header">
+            <div class="stage-number">1</div>
+            <div class="stage-title">Consideration Stage</div>
+            <div class="stage-goal">
+                <strong>Goal:</strong> Push new leads and interested users down the funnel by converting them into bookings
             </div>
         </div>
 
-        <!-- Stage 2: Post-Booking -->
-        <div class="stage post-booking">
-            <div class="arrow">→</div>
-            <div class="stage-header">
-                <div class="stage-number">2</div>
-                <div class="stage-title">Post-Booking Stage</div>
-                <div class="stage-goal">
-                    <strong>Goal:</strong> Ensure smooth pre-appointment experience, improve booking>rental conversion, and reduce no-shows
-                </div>
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">Abandoned Cart</div>
+            <div class="series-details">Recover incomplete bookings</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+                <span class="channel sms">SMS</span>
+                <span class="channel whatsapp">WhatsApp</span>
             </div>
-
-            <div class="series active">
-                <div class="status active">Active</div>
-                <div class="series-name">Appointment Scheduled Confirmation</div>
-                <div class="series-details">Immediate confirmation after booking</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                    <span class="channel sms">SMS</span>
-                    <span class="channel whatsapp">WhatsApp</span>
-                </div>
-                <div class="audience">🌍 Global</div>
-                <div class="timing">Instant • One-time message</div>
-            </div>
-
-            <div class="series active">
-                <div class="status active">Active</div>
-                <div class="series-name">D-1 Appointment Confirmation</div>
-                <div class="series-details">Reduce no-shows with 24h reminder</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                    <span class="channel sms">SMS</span>
-                    <span class="channel whatsapp">WhatsApp</span>
-                </div>
-                <div class="audience">🇬🇧 UK, 🇺🇸 NA, 🇫🇷 FR</div>
-                <div class="timing">24h before • 21:00 & 23:00</div>
-                <div class="action-needed">📅 Global rollout by end of July</div>
-            </div>
-
-            <div class="series active">
-                <div class="status active">Active</div>
-                <div class="series-name">No-Show Follow-Up</div>
-                <div class="series-details">Re-engage missed appointments</div>
-                <div class="channels">
-                    <span class="channel sms">SMS</span>
-                    <span class="channel whatsapp">WhatsApp</span>
-                </div>
-                <div class="audience">🌍 Global</div>
-                <div class="timing">Same day • 6:00 PM</div>
-            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1364333">Global</a> (disabled: FR, DE)</div>
+            <div class="timing">3-day series • 3 communications</div>
         </div>
 
-        <!-- Stage 3: Post-Onboarding -->
-        <div class="stage post-onboarding">
-            <div class="arrow">→</div>
-            <div class="stage-header">
-                <div class="stage-number">3</div>
-                <div class="stage-title">Post-Onboarding Stage</div>
-                <div class="stage-goal">
-                    <strong>Goal:</strong> Welcome new subscribers and provide essential information about their subscription
-                </div>
+        <div class="series needs-update">
+            <div class="status needs-update">Needs Update</div>
+            <div class="series-name">Welcome 10</div>
+            <div class="series-details">Encourage bookings with $10 discount code</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
             </div>
-
-            <div class="series needs-update">
-                <div class="status needs-update">Needs Update</div>
-                <div class="series-name">Post-Onboarding E-Bike</div>
-                <div class="series-details">Educate on theft protection, referrals, battery safety</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                </div>
-                <div class="audience">🌍 Global</div>
-                <div class="timing">15-day sequence (19-day AU)</div>
-                <div class="action-needed">⚠️ Content/branding update + check contract inclusion</div>
-            </div>
-
-            <div class="series issue">
-                <div class="status issue">Technical Issue</div>
-                <div class="series-name">Post-Onboarding E-Moped</div>
-                <div class="series-details">Moped-specific instructions for Spain</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                </div>
-                <div class="audience">🇪🇸 Spain (MAD, VAL, BCN)</div>
-                <div class="timing">At subscription activation</div>
-                <div class="action-needed">🔧 Investigate technical issues</div>
-            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/633458">Global</a></div>
+            <div class="timing">14-day series • 3 emails</div>
+            <div class="action-needed">⚠️ Requires branding and content update</div>
         </div>
 
-        <!-- Stage 4: Usage & Ongoing Experience -->
-        <div class="stage usage">
-            <div class="arrow">→</div>
-            <div class="stage-header">
-                <div class="stage-number">4</div>
-                <div class="stage-title">Usage & Ongoing Experience</div>
-                <div class="stage-goal">
-                    <strong>Goal:</strong> Monitor satisfaction, gather feedback, and maintain positive relationship with customers
-                </div>
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">10€/20€ Coupon</div>
+            <div class="series-details">Drive bookings in Spanish market</div>
+            <div class="channels">
+                <span class="channel whatsapp">WhatsApp</span>
             </div>
-
-            <div class="series needs-update">
-                <div class="status needs-update">Needs Update</div>
-                <div class="series-name">NPS Feedback Surveys</div>
-                <div class="series-details">Systematic feedback at key milestones</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                </div>
-                <div class="audience">🌍 Global (varied timing)</div>
-                <div class="timing">Day 1 • Day 30/90 • Return day</div>
-                <div class="action-needed">⚠️ All NPS series require updates</div>
-            </div>
-        </div>
-
-        <!-- Stage 5: Offboarding -->
-        <div class="stage offboarding">
-            <div class="arrow">→</div>
-            <div class="stage-header">
-                <div class="stage-number">5</div>
-                <div class="stage-title">Offboarding Stage</div>
-                <div class="stage-goal">
-                    <strong>Goal:</strong> Understand churn reasons, gather feedback, and leave positive impression
-                </div>
-            </div>
-
-            <div class="series needs-update">
-                <div class="status needs-update">Needs Update</div>
-                <div class="series-name">NPS Feedback Return Survey</div>
-                <div class="series-details">Capture return process feedback</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                </div>
-                <div class="audience">🌍 Global</div>
-                <div class="timing">Day of return</div>
-                <div class="action-needed">⚠️ Requires update</div>
-            </div>
-        </div>
-
-        <!-- Stage 6: Arrears Management -->
-        <div class="stage arrears">
-            <div class="stage-header">
-                <div class="stage-number">6</div>
-                <div class="stage-title">Arrears Management</div>
-                <div class="stage-goal">
-                    <strong>Goal:</strong> Proactively manage failed payments and recover outstanding revenue
-                </div>
-            </div>
-
-            <div class="series active">
-                <div class="status active">Active</div>
-                <div class="series-name">Global Arrears Communications</div>
-                <div class="series-details">Notify payment failures, guide payment updates</div>
-                <div class="channels">
-                    <span class="channel email">Email</span>
-                    <span class="channel sms">SMS</span>
-                    <span class="channel push">Push</span>
-                </div>
-                <div class="audience">🌍 Global</div>
-                <div class="timing">30-day escalation series</div>
-            </div>
+            <div class="audience">🇪🇸 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1271953">Spain only</a></div>
+            <div class="timing">5-day series • 3 messages</div>
         </div>
     </div>
 
-    <div class="legend">
-        <h3>Legend & Key Information</h3>
-        <div class="legend-grid">
-            <div class="legend-item">
-                <div class="channel email">Email</div>
-                <span>Email Communications</span>
-            </div>
-            <div class="legend-item">
-                <div class="channel sms">SMS</div>
-                <span>SMS Messages</span>
-            </div>
-            <div class="legend-item">
-                <div class="channel whatsapp">WhatsApp</div>
-                <span>WhatsApp Messages</span>
-            </div>
-            <div class="legend-item">
-                <div class="channel push">Push</div>
-                <span>Push Notifications</span>
-            </div>
-            <div class="legend-item">
-                <div class="status active">Active</div>
-                <span>Currently Running</span>
-            </div>
-            <div class="legend-item">
-                <div class="status needs-update">Needs Update</div>
-                <span>Requires Content/Branding Update</span>
-            </div>
-            <div class="legend-item">
-                <div class="status issue">Technical Issue</div>
-                <span>Technical Problems to Resolve</span>
-            </div>
-            <div class="legend-item">
-                <span>🌍 Global</span>
-                <span>All Markets</span>
-            </div>
-            <div class="legend-item">
-                <span>🇺🇸 NA</span>
-                <span>North America</span>
-            </div>
-            <div class="legend-item">
-                <span>🇪🇸 Spain</span>
-                <span>Spain Only</span>
-            </div>
-            <div class="legend-item">
-                <span>🇬🇧 UK</span>
-                <span>United Kingdom</span>
-            </div>
-            <div class="legend-item">
-                <span>🇫🇷 FR</span>
-                <span>France</span>
-            </div>
-            <div class="legend-item">
-                <span>🇦🇺 AU</span>
-                <span>Australia</span>
+    <!-- Stage 2: Post-Booking -->
+    <div class="stage post-booking">
+        <div class="arrow">→</div>
+        <div class="stage-header">
+            <div class="stage-number">2</div>
+            <div class="stage-title">Post-Booking Stage</div>
+            <div class="stage-goal">
+                <strong>Goal:</strong> Ensure smooth pre-appointment experience, improve booking>rental conversion, and reduce no-shows
             </div>
         </div>
+
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">Appointment Scheduled Confirmation</div>
+            <div class="series-details">Immediate confirmation after booking</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+                <span class="channel sms">SMS</span>
+                <span class="channel whatsapp">WhatsApp</span>
+            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/633424">Global</a></div>
+            <div class="timing">Instant • One-time message</div>
+        </div>
+
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">D-1 Appointment Confirmation</div>
+            <div class="series-details">Reduce no-shows with 24h reminder</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+                <span class="channel sms">SMS</span>
+                <span class="channel whatsapp">WhatsApp</span>
+            </div>
+            <div class="audience">🇬🇧 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1133650">UK</a>, 🇺🇸 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1095562">NA</a>, 🇫🇷 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1122577">FR</a></div>
+            <div class="timing">24h before • 21:00 & 23:00</div>
+            <div class="action-needed">📅 Global rollout by end of July</div>
+        </div>
+
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">KYC Not Submitted / Rejected</div>
+            <div class="series-details">Ensure docs are submitted before appointment</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1243538">Global</a></div>
+            <div class="timing">24h before appointment or on rejection</div>
+        </div>
+
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">No-Show</div>
+            <div class="series-details">Re-engage missed appointments</div>
+            <div class="channels">
+                <span class="channel sms">SMS</span>
+                <span class="channel whatsapp">WhatsApp</span>
+            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1410502">Global</a></div>
+            <div class="timing">Same day • 6:00 PM</div>
+        </div>
     </div>
+
+    <!-- Stage 3: Post-Onboarding -->
+    <div class="stage post-onboarding">
+        <div class="arrow">→</div>
+        <div class="stage-header">
+            <div class="stage-number">3</div>
+            <div class="stage-title">Post-Onboarding Stage</div>
+            <div class="stage-goal">
+                <strong>Goal:</strong> Welcome new subscribers and provide essential information about their subscription
+            </div>
+        </div>
+
+        <div class="series needs-update">
+            <div class="status needs-update">Needs Update</div>
+            <div class="series-name">Post-Onboarding E-Bike</div>
+            <div class="series-details">Educate on theft protection, referrals, battery safety</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/633433">Global</a></div>
+            <div class="timing">15-day sequence (19-day AU)</div>
+            <div class="action-needed">⚠️ Content/branding update + check contract inclusion</div>
+        </div>
+
+        <div class="series issue">
+            <div class="status issue">Technical Issue</div>
+            <div class="series-name">Post-Onboarding E-Moped</div>
+            <div class="series-details">Moped-specific instructions for Spain</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+            </div>
+            <div class="audience">🇪🇸 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1271953">Spain</a> (MAD, VAL, BCN)</div>
+            <div class="timing">At subscription activation</div>
+            <div class="action-needed">🔧 Investigate technical issues</div>
+        </div>
+    </div>
+
+    <!-- Stage 4: Usage & Ongoing Experience -->
+    <div class="stage usage">
+        <div class="arrow">→</div>
+        <div class="stage-header">
+            <div class="stage-number">4</div>
+            <div class="stage-title">Usage & Ongoing Experience</div>
+            <div class="stage-goal">
+                <strong>Goal:</strong> Monitor satisfaction, gather feedback, and maintain positive relationship with customers
+            </div>
+        </div>
+
+        <div class="series needs-update">
+            <div class="status needs-update">Needs Update</div>
+            <div class="series-name">NPS Feedback Surveys</div>
+            <div class="series-details">Systematic feedback at key milestones</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+            </div>
+            <div class="audience">🌍 <a href="#">Global</a> (varied timing)</div>
+            <div class="timing">Day 1 • Day 30/90 • Return day</div>
+            <div class="action-needed">⚠️ All NPS series require updates</div>
+        </div>
+
+        <div class="series needs-update">
+            <div class="status needs-update">Needs Update</div>
+            <div class="series-name">Servicing Reminder (SR90)</div>
+            <div class="series-details">Remind users for a free 90-day bike check-up</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1422484">Global</a></div>
+            <div class="timing">Single email after 90 days w/o check-up</div>
+            <div class="action-needed">⚠️ Needs update</div>
+        </div>
+
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">Battery Blacklist</div>
+            <div class="series-details">Prompt return of stolen batteries via warnings</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+            </div>
+            <div class="audience">🇬🇧 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1422497">UK</a>, 🇫🇷 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1422497">FR</a></div>
+            <div class="timing">3-day, 3-email series</div>
+        </div>
+    </div>
+
+    <!-- Stage 5: Offboarding -->
+    <div class="stage offboarding">
+        <div class="arrow">→</div>
+        <div class="stage-header">
+            <div class="stage-number">5</div>
+            <div class="stage-title">Offboarding Stage</div>
+            <div class="stage-goal">
+                <strong>Goal:</strong> Understand churn reasons, gather feedback, and leave positive impression
+            </div>
+        </div>
+
+        <div class="series needs-update">
+            <div class="status needs-update">Needs Update</div>
+            <div class="series-name">NPS Feedback Return Survey</div>
+            <div class="series-details">Capture return process feedback</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+            </div>
+            <div class="audience">🌍 <a href="https://app.intercom.com/a/apps/yy7p924x/outbound/series/1095570">Global</a></div>
+            <div class="timing">Day of return</div>
+            <div class="action-needed">⚠️ Requires update</div>
+        </div>
+    </div>
+
+    <!-- Stage 6: Arrears Management -->
+    <div class="stage arrears">
+        <div class="stage-header">
+            <div class="stage-number">6</div>
+            <div class="stage-title">Arrears Management</div>
+            <div class="stage-goal">
+                <strong>Goal:</strong> Proactively manage failed payments and recover outstanding revenue
+            </div>
+        </div>
+
+        <div class="series active">
+            <div class="status active">Active</div>
+            <div class="series-name">Global Arrears Communications</div>
+            <div class="series-details">Notify payment failures, guide payment updates</div>
+            <div class="channels">
+                <span class="channel email">Email</span>
+                <span class="channel sms">SMS</span>
+                <span class="channel push">Push</span>
+            </div>
+            <div class="audience">🌍 Global</div>
+            <div class="timing">30-day escalation series</div>
+        </div>
+    </div>
+</div>
+
+<div class="legend">
+    <h3>Ownership & Contact Points</h3>
+    <div class="ownership-grid">
+        <div>
+            <h4>Consideration & Post-Booking</h4>
+            <p>Marketing Team</p>
+        </div>
+        <div>
+            <h4>Onboarding & Usage</h4>
+            <p>Customer Success Team</p>
+        </div>
+        <div>
+            <h4>Offboarding & Arrears</h4>
+            <p>Operations Team</p>
+        </div>
+        <div>
+            <h4>Local Markets</h4>
+            <p>Country Leads</p>
+        </div>
+    </div>
+    <div class="contact-info">
+        For updates or suggestions on automated series, please contact <a href="mailto:minaya.algora@hotmail.com">Minaya</a>.
+    </div>
+</div>
 </body>
 </html>
